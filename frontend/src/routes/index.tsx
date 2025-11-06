@@ -1,5 +1,5 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
-import HelloWorld from '@/pages/hello-world';
+import { HashRouter, Routes, Route } from "react-router-dom";
+import HelloWorld from "@/pages/hello-world";
 
 /**
  * Router Component
