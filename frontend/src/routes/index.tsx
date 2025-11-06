@@ -1,5 +1,6 @@
-import { HashRouter, Routes, Route } from "react-router-dom";
-import HelloWorld from "@/pages/hello-world";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Login, Signup, Dashboard, Projects, TimeEntries } from "@/pages";
+import { ProtectedRoute } from "@/components/auth";
 
 /**
  * Router Component
@@ -9,12 +10,14 @@ import HelloWorld from "@/pages/hello-world";
  * ✅ Responsibilities:
  * - Provide client-side routing context for the application.
  * - Define available routes and their corresponding page components.
+ * - Protect authenticated routes with ProtectedRoute wrapper.
  * - Serve as a central place to extend routing (add new pages, nested routes, etc.).
  *
  * @remarks
  * - Uses `HashRouter` for hash-based URLs (e.g., /#/path).
  * - Wrap all route definitions inside `<Routes>` for v6+ syntax.
  * - Each `<Route>` maps a `path` to a component.
+ * - Protected routes require authentication to access.
  *
  * @example
  * ```tsx
@@ -30,8 +33,53 @@ const Router: React.FC = () => {
   return (
     <HashRouter>
       <Routes>
-        {/* Root path → HelloWorld page */}
-        <Route path="/" element={<HelloWorld />} />
+        {/* Authentication routes - accessible without login */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Protected routes - require authentication */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/dashboard" replace />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/projects"
+          element={
+            <ProtectedRoute>
+              <Projects />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/time-entries"
+          element={
+            <ProtectedRoute>
+              <TimeEntries />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Catch all route - redirect to dashboard */}
+        <Route
+          path="*"
+          element={
+            <ProtectedRoute>
+              <Navigate to="/dashboard" replace />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </HashRouter>
   );
