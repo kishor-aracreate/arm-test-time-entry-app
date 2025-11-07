@@ -1,7 +1,7 @@
-import { defineConfig } from 'unocss'
-import presetWind4 from '@unocss/preset-wind4'
+import { defineConfig } from "unocss";
+import presetWind4 from "@unocss/preset-wind4";
 // Optional presets if needed later
-// import presetAttributify from '@unocss/preset-attributify'
+import presetAttributify from "@unocss/preset-attributify";
 // import presetIcons from '@unocss/preset-icons'
 
 /**
@@ -17,19 +17,13 @@ import presetWind4 from '@unocss/preset-wind4'
 export default defineConfig({
   presets: [
     presetWind4(),
-    // presetAttributify(), // enable if you want attribute-based utilities
+    presetAttributify(), // enable if you want attribute-based utilities
     // presetIcons(),       // enable if you want icon utilities
   ],
   content: {
     pipeline: {
-      include: [
-        'src/**/*.{ts,tsx}', 
-      ],
-      exclude: [
-        'node_modules',
-        'dist',
-      ],
+      include: ["src/**/*.{ts,tsx}"],
+      exclude: ["node_modules", "dist"],
     },
   },
-})
-
+});
