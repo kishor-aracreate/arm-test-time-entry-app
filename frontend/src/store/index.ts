@@ -2,18 +2,15 @@
  * Zustand Store
  * ---------------------------------------------------------------------------
  * Central state management for the Timer App using Zustand.
- * Manages authentication, timer state, projects, and time entries.
+ * Manages timer state, projects, and time entries.
  */
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import type {
-    User,
     Project,
     TimeEntry,
     ActiveTimer,
-    LoginCredentials,
-    SignupData,
     StartTimerData,
     CreateProjectData,
     CreateTimeEntryData,
@@ -21,10 +18,6 @@ import type {
 } from './types';
 
 interface AppState {
-    // Auth state
-    user: User | null;
-    token: string | null;
-
     // Timer state
     activeTimer: ActiveTimer | null;
     elapsedTime: number;
@@ -37,13 +30,6 @@ interface AppState {
     isLoading: boolean;
     isInitialLoading: boolean;
     error: string | null;
-
-    // Auth actions
-    login: (credentials: LoginCredentials) => Promise<void>;
-    signup: (data: SignupData) => Promise<void>;
-    logout: () => void;
-    setUser: (user: User | null) => void;
-    setToken: (token: string | null) => void;
 
     // Timer actions
     startTimer: (timerData: StartTimerData) => Promise<void>;
@@ -77,8 +63,6 @@ export const useAppStore = create<AppState>()(
     devtools(
         (set, get) => ({
             // Initial state
-            user: null,
-            token: localStorage.getItem('timer-app-token'),
             activeTimer: null,
             elapsedTime: 0,
             projects: [],
@@ -86,97 +70,6 @@ export const useAppStore = create<AppState>()(
             isLoading: false,
             isInitialLoading: true,
             error: null,
-
-            // Auth actions
-            login: async (credentials: LoginCredentials) => {
-                set({ isLoading: true, error: null });
-                try {
-                    const { apiService } = await import('@/lib/api');
-                    const response = await apiService.login(credentials);
-
-                    // Set user and token in store
-                    set({
-                        user: response.user,
-                        token: response.token,
-                        isLoading: false,
-                    });
-
-                    // Store token in localStorage (handled by setToken action)
-                    get().setToken(response.token);
-
-                    // Fetch active timer after successful login
-                    get().fetchActiveTimer();
-                } catch (error: any) {
-                    set({
-                        isLoading: false,
-                        error: error.message || 'Login failed'
-                    });
-                    throw error;
-                }
-            },
-
-            signup: async (data: SignupData) => {
-                set({ isLoading: true, error: null });
-                try {
-                    const { apiService } = await import('@/lib/api');
-                    const response = await apiService.signup(data);
-
-                    // Set user and token in store
-                    set({
-                        user: response.user,
-                        token: response.token,
-                        isLoading: false,
-                    });
-
-                    // Store token in localStorage (handled by setToken action)
-                    get().setToken(response.token);
-
-                    // Fetch active timer after successful signup
-                    get().fetchActiveTimer();
-                } catch (error: any) {
-                    set({
-                        isLoading: false,
-                        error: error.message || 'Signup failed'
-                    });
-                    throw error;
-                }
-            },
-
-            logout: async () => {
-                try {
-                    // Call logout API endpoint if token exists
-                    const currentToken = get().token;
-                    if (currentToken) {
-                        const { apiService } = await import('@/lib/api');
-                        await apiService.logout();
-                    }
-                } catch (error) {
-                    // Continue with logout even if API call fails
-                    console.error('Logout API call failed:', error);
-                } finally {
-                    // Clear all state and localStorage
-                    localStorage.removeItem('timer-app-token');
-                    set({
-                        user: null,
-                        token: null,
-                        activeTimer: null,
-                        elapsedTime: 0,
-                        projects: [],
-                        timeEntries: [],
-                        error: null,
-                    });
-                }
-            },
-
-            setUser: (user: User | null) => set({ user }),
-            setToken: (token: string | null) => {
-                if (token) {
-                    localStorage.setItem('timer-app-token', token);
-                } else {
-                    localStorage.removeItem('timer-app-token');
-                }
-                set({ token });
-            },
 
             // Timer actions
             startTimer: async (timerData: StartTimerData) => {

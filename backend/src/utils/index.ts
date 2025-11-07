@@ -4,6 +4,3 @@ export const formatResponse = (data: any) => {
     timestamp: new Date().toISOString(),
   };
 };
-
-export * from './password';
-export * from './jwt';

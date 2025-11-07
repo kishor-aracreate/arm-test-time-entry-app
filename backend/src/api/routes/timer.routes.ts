@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { TimerController } from '../controllers/timer.controller';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { userIdMiddleware } from '../middlewares';
 
 const router: Router = Router();
 const timerController = new TimerController();
 
-// All timer routes require authentication
-router.use(authMiddleware);
+// All timer routes require user ID
+router.use(userIdMiddleware);
 
 // Timer routes
 router.post('/start', timerController.startTimer);

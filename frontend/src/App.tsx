@@ -1,5 +1,4 @@
 import Router from '@/routes';
-import { AuthProvider } from '@/components/auth';
 import { ErrorBoundary } from '@/components/ui';
 import { ToastProvider } from '@/components/providers/ToastProvider';
 
@@ -7,20 +6,22 @@ import { ToastProvider } from '@/components/providers/ToastProvider';
  * App Component
  * ---------------------------------------------------------------------------
  * Root component of the application with comprehensive error handling and notifications.
+ * Configured to work without authentication - direct access to all features.
  *
  * ✅ Responsibilities:
  * - Provide the application shell with error boundaries
- * - Wrap the app with authentication provider for JWT token management
  * - Provide global toast notification system
  * - Mount the routing system (`<Router />`) which defines all page-level routes
  * - Act as the single entry point rendered by `main.tsx`
+ * - Ensure application works without authentication setup
  *
  * @remarks
  * - Keep this component lightweight; it should only wrap high-level providers
- *   (e.g., ErrorBoundary, ToastProvider, AuthProvider) and the Router.
+ *   (e.g., ErrorBoundary, ToastProvider) and the Router.
  * - All actual page rendering is delegated to `Router`.
  * - Error boundaries catch JavaScript errors anywhere in the component tree
  * - Toast provider enables global notification system
+ * - No authentication providers needed - app uses static user ID
  *
  * @example
  * ```tsx
@@ -40,10 +41,8 @@ function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
-        <AuthProvider>
-          {/* Application Router handles all page navigation */}
-          <Router />
-        </AuthProvider>
+        {/* Application Router handles all page navigation */}
+        <Router />
       </ToastProvider>
     </ErrorBoundary>
   );

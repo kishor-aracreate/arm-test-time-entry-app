@@ -2,13 +2,10 @@
  * API Service
  * ---------------------------------------------------------------------------
  * HTTP client for communicating with the backend API.
- * Handles authentication, error handling, and request/response formatting.
+ * Handles error handling, request/response formatting, and static user ID headers.
  */
 
 import type {
-    LoginCredentials,
-    SignupData,
-    User,
     Project,
     CreateProjectData,
     ActiveTimer,
@@ -47,11 +44,10 @@ class ApiError extends Error {
 }
 
 class ApiService {
-    private getAuthHeaders(): HeadersInit {
-        const token = localStorage.getItem('timer-app-token');
+    private getHeaders(): HeadersInit {
         return {
             'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
+            'X-User-ID': '1', // Static user ID
         };
     }
 
@@ -61,7 +57,7 @@ class ApiService {
     ): Promise<T> {
         const url = `${API_BASE_URL}${endpoint}`;
         const config: RequestInit = {
-            headers: this.getAuthHeaders(),
+            headers: this.getHeaders(),
             ...options,
         };
 
@@ -92,26 +88,7 @@ class ApiService {
         }
     }
 
-    // Authentication endpoints
-    async login(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
-        return this.request('/auth/login', {
-            method: 'POST',
-            body: JSON.stringify(credentials),
-        });
-    }
 
-    async signup(data: SignupData): Promise<{ user: User; token: string }> {
-        return this.request('/auth/signup', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
-    }
-
-    async logout(): Promise<void> {
-        return this.request('/auth/logout', {
-            method: 'POST',
-        });
-    }
 
     // Project endpoints
     async getProjects(): Promise<Project[]> {

@@ -11,21 +11,10 @@ export class TimeEntryController {
 
     /**
      * GET /api/time-entries
-     * Get time entries for the authenticated user with optional date filtering
+     * Get time entries for the user with optional date filtering
      */
     getTimeEntries = async (req: Request, res: Response<ApiResponse<TimeEntry[]>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const date = req.query.date as string | undefined;
             const includeProjects = req.query.includeProjects !== 'false'; // Default to true
 
@@ -55,17 +44,6 @@ export class TimeEntryController {
      */
     createTimeEntry = async (req: Request, res: Response<ApiResponse<TimeEntry>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const timeEntryData: CreateTimeEntryData = {
                 ...req.body,
                 startTime: new Date(req.body.startTime),
@@ -120,17 +98,6 @@ export class TimeEntryController {
      */
     getTimeEntry = async (req: Request, res: Response<ApiResponse<TimeEntry>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const timeEntryIdParam = req.params.id;
             if (!timeEntryIdParam) {
                 res.status(400).json({
@@ -192,17 +159,6 @@ export class TimeEntryController {
      */
     updateTimeEntry = async (req: Request, res: Response<ApiResponse<TimeEntry>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const timeEntryIdParam = req.params.id;
             if (!timeEntryIdParam) {
                 res.status(400).json({
@@ -296,17 +252,6 @@ export class TimeEntryController {
      */
     deleteTimeEntry = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const timeEntryIdParam = req.params.id;
             if (!timeEntryIdParam) {
                 res.status(400).json({
@@ -370,17 +315,6 @@ export class TimeEntryController {
      */
     getDailySummary = async (req: Request, res: Response<ApiResponse<any>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const date = req.query.date as string;
             if (!date) {
                 res.status(400).json({
@@ -419,17 +353,6 @@ export class TimeEntryController {
      */
     getWeeklySummary = async (req: Request, res: Response<ApiResponse<any>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const startDate = req.query.startDate as string;
             const endDate = req.query.endDate as string;
 

@@ -5,12 +5,7 @@
  * These types define the shape of data used throughout the app.
  */
 
-export interface User {
-    id: number;
-    name: string;
-    email: string;
-    createdAt: Date;
-}
+
 
 export interface Project {
     id: number;
@@ -42,16 +37,6 @@ export interface ActiveTimer {
 }
 
 // API request/response types
-export interface LoginCredentials {
-    email: string;
-    password: string;
-}
-
-export interface SignupData {
-    name: string;
-    email: string;
-    password: string;
-}
 
 export interface StartTimerData {
     taskName: string;

@@ -9,8 +9,6 @@ import { useCallback } from 'react';
 import { useAppStore } from '@/store';
 import { useToastContext } from '@/components/providers/ToastProvider';
 import type {
-    LoginCredentials,
-    SignupData,
     StartTimerData,
     CreateProjectData,
     CreateTimeEntryData,
@@ -21,58 +19,7 @@ export const useAppWithToast = () => {
     const store = useAppStore();
     const toast = useToastContext();
 
-    // Enhanced auth actions with toast notifications
-    const login = useCallback(async (credentials: LoginCredentials) => {
-        try {
-            await store.login(credentials);
-            toast.success({
-                title: 'Welcome back!',
-                message: 'You have been successfully logged in.',
-                duration: 3000,
-            });
-        } catch (error: any) {
-            toast.error({
-                title: 'Login Failed',
-                message: error.message || 'Please check your credentials and try again.',
-            });
-            throw error;
-        }
-    }, [store.login, toast]);
 
-    const signup = useCallback(async (data: SignupData) => {
-        try {
-            await store.signup(data);
-            toast.success({
-                title: 'Account Created!',
-                message: 'Welcome to Timer App. You can now start tracking your time.',
-                duration: 4000,
-            });
-        } catch (error: any) {
-            toast.error({
-                title: 'Signup Failed',
-                message: error.message || 'Please check your information and try again.',
-            });
-            throw error;
-        }
-    }, [store.signup, toast]);
-
-    const logout = useCallback(async () => {
-        try {
-            await store.logout();
-            toast.info({
-                title: 'Logged Out',
-                message: 'You have been successfully logged out.',
-                duration: 3000,
-            });
-        } catch (error: any) {
-            // Still show success message even if API call fails
-            toast.info({
-                title: 'Logged Out',
-                message: 'You have been logged out.',
-                duration: 3000,
-            });
-        }
-    }, [store.logout, toast]);
 
     // Enhanced timer actions with toast notifications
     const startTimer = useCallback(async (timerData: StartTimerData) => {
@@ -227,9 +174,6 @@ export const useAppWithToast = () => {
     return {
         ...store,
         // Override actions with toast-enhanced versions
-        login,
-        signup,
-        logout,
         startTimer,
         stopTimer,
         createProject,

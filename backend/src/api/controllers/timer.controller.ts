@@ -15,17 +15,7 @@ export class TimerController {
      */
     startTimer = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user?.id;
-            if (!userId) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'User not authenticated',
-                        code: 'UNAUTHORIZED'
-                    }
-                } as ApiResponse);
-                return;
-            }
+            const userId = req.user.id;
 
             const timerData: StartTimerData = {
                 taskName: req.body.taskName,
@@ -91,17 +81,7 @@ export class TimerController {
      */
     stopTimer = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user?.id;
-            if (!userId) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'User not authenticated',
-                        code: 'UNAUTHORIZED'
-                    }
-                } as ApiResponse);
-                return;
-            }
+            const userId = req.user.id;
 
             const result = await this.activeTimerService.stopTimer(userId);
 
@@ -142,17 +122,7 @@ export class TimerController {
      */
     getActiveTimer = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user?.id;
-            if (!userId) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'User not authenticated',
-                        code: 'UNAUTHORIZED'
-                    }
-                } as ApiResponse);
-                return;
-            }
+            const userId = req.user.id;
 
             const activeTimer = await this.activeTimerService.getActiveTimer(userId, true);
 

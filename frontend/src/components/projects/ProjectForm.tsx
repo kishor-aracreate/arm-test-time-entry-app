@@ -143,6 +143,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                             placeholder="Enter project name"
                             disabled={isLoading}
                             required
+                            autoFocus
                         />
                     </div>
 

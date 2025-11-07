@@ -21,6 +21,16 @@ const Projects: React.FC = () => {
         fetchProjects();
     }, [fetchProjects]);
 
+    // Check for action=create query parameter
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('action') === 'create') {
+            setShowForm(true);
+            // Clean up URL
+            window.history.replaceState({}, '', window.location.pathname + window.location.hash.split('?')[0]);
+        }
+    }, []);
+
     // Clear errors when component unmounts
     useEffect(() => {
         return () => {

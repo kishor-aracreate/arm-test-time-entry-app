@@ -11,21 +11,10 @@ export class ProjectController {
 
     /**
      * GET /api/projects
-     * Get all projects for the authenticated user
+     * Get all projects for the user
      */
     getProjects = async (req: Request, res: Response<ApiResponse<Project[]>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const projects = await this.projectService.getUserProjects(req.user.id);
 
             res.status(200).json({
@@ -52,17 +41,6 @@ export class ProjectController {
      */
     createProject = async (req: Request, res: Response<ApiResponse<Project>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const projectData: CreateProjectData = req.body;
 
             const project = await this.projectService.createProject(req.user.id, projectData);
@@ -102,17 +80,6 @@ export class ProjectController {
      */
     getProject = async (req: Request, res: Response<ApiResponse<Project>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const projectIdParam = req.params.id;
             if (!projectIdParam) {
                 res.status(400).json({
@@ -174,17 +141,6 @@ export class ProjectController {
      */
     updateProject = async (req: Request, res: Response<ApiResponse<Project>>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const projectIdParam = req.params.id;
             if (!projectIdParam) {
                 res.status(400).json({
@@ -259,17 +215,6 @@ export class ProjectController {
      */
     deleteProject = async (req: Request, res: Response<ApiResponse>): Promise<void> => {
         try {
-            if (!req.user) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Authentication required',
-                        code: 'AUTH_REQUIRED'
-                    }
-                });
-                return;
-            }
-
             const projectIdParam = req.params.id;
             if (!projectIdParam) {
                 res.status(400).json({

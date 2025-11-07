@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { ProjectController } from '../controllers/project.controller';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { userIdMiddleware } from '../middlewares';
 
 const router: Router = Router();
 const projectController = new ProjectController();
 
-// All project routes require authentication
-router.use(authMiddleware);
+// All project routes require user ID
+router.use(userIdMiddleware);
 
 // Project CRUD routes
 router.get('/', projectController.getProjects);

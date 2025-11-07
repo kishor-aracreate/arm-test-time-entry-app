@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import type { ToastData, ToastType } from '@/components/ui/Toast';
+import type { ToastData, ToastType } from '@/components/ui';
 
 interface ShowToastOptions {
     title: string;

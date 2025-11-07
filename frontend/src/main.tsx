@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import '@/index.css';
 import App from '@/App.tsx';
 import 'virtual:uno.css';
+import '@kishor-aracreate/ac-ui-library-test/style.css';
 
 /**
  * Application Entry Point

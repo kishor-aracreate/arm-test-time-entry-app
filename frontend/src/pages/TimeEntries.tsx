@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import { Card, Button } from '@/components/ui';
 import { TimeEntryForm, TimeEntryList } from '@/components/time-entries';
@@ -12,6 +13,7 @@ import { useAppStore } from '@/store';
 import type { TimeEntry } from '@/store/types';
 
 const TimeEntries: React.FC = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
     const {
         timeEntries,
         projects,
@@ -33,6 +35,29 @@ const TimeEntries: React.FC = () => {
         fetchProjects();
         fetchTimeEntries();
     }, [fetchProjects, fetchTimeEntries]);
+
+    // Check for query parameters
+    useEffect(() => {
+        // Handle action=add
+        if (searchParams.get('action') === 'add') {
+            setShowForm(true);
+            const newParams = new URLSearchParams(searchParams);
+            newParams.delete('action');
+            setSearchParams(newParams);
+        }
+
+        // Handle filter parameter
+        const filter = searchParams.get('filter');
+        if (filter && ['today', 'week', 'month', 'all'].includes(filter)) {
+            setDateFilter(filter);
+        }
+
+        // Handle project parameter
+        const project = searchParams.get('project');
+        if (project) {
+            setProjectFilter(project);
+        }
+    }, [searchParams, setSearchParams]);
 
     // Apply filters when they change
     useEffect(() => {
