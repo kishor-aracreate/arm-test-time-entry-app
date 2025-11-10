@@ -6,29 +6,29 @@
  * Enhanced with responsive design and mobile-first approach.
  */
 
-import React from 'react';
-import { OfflineIndicator } from '@/components/ui';
-import Navbar from './Navbar';
+import React from "react";
+import { OfflineIndicator } from "@/components/ui";
+import Navbar from "./Navbar";
 
 interface LayoutProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-    return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Offline Indicator */}
-            <OfflineIndicator />
+  return (
+    <div className="min-h-screen bg-bg">
+      {/* Offline Indicator */}
+      <OfflineIndicator />
 
-            {/* Navigation Bar */}
-            <Navbar />
+      {/* Navigation Bar */}
+      <Navbar />
 
-            {/* Main content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-                {children}
-            </main>
-        </div>
-    );
+      {/* Main content */}
+      <main className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        {children}
+      </main>
+    </div>
+  );
 };
 
 export default Layout;

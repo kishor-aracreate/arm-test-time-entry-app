@@ -4,7 +4,7 @@
  * Form for creating and editing projects with color picker and validation.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Card, Button, Input } from "@/components/ui";
 import { useAppWithToast } from "@/hooks/useAppWithToast";
 import type { Project, CreateProjectData } from "@/store/types";
@@ -91,10 +91,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <Card
+        className="w-full max-w-md max-h-[90vh] overflow-y-auto"
+        padding="none"
+      >
+        <form onSubmit={handleSubmit} className="space-y-6 bg-bg text-text p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">
+            <h2 className="text-xl font-semibold">
               {project ? "Edit Project" : "Create Project"}
             </h2>
             <Button
@@ -103,7 +106,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               size="sm"
               onClick={onClose}
               disabled={isLoading}
-              className="text-gray-400 hover:text-gray-600 p-1"
+              className=" hover:text-gray-600 p-1"
             >
               <svg
                 className="w-6 h-6"
@@ -127,7 +130,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             </div>
           )}
 
-          <div>
+          <div className="text-text">
             <Input
               label="Project Name"
               name="name"
@@ -142,7 +145,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium  mb-3">
               Project Color
             </label>
             <div className="grid grid-cols-5 gap-2 sm:gap-3">
@@ -152,10 +155,11 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                   type="button"
                   className={`
                                         w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all duration-200 shadow-sm
-                                        ${formData.color === color
-                      ? "border-gray-900 scale-110 shadow-md"
-                      : "border-gray-300 hover:border-gray-400 hover:scale-105"
-                    }
+                                        ${
+                                          formData.color === color
+                                            ? "border-gray-900 scale-110 shadow-md"
+                                            : "border-gray-300 hover:border-gray-400 hover:scale-105"
+                                        }
                                     `}
                   style={{ backgroundColor: color }}
                   onClick={() => handleColorSelect(color)}
@@ -164,9 +168,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               ))}
             </div>
             <div className="mt-4 flex items-center space-x-3">
-              <label className="text-sm font-medium text-gray-700">
-                Custom:
-              </label>
+              <label className="text-sm font-medium">Custom:</label>
               <input
                 type="color"
                 value={formData.color}
@@ -180,7 +182,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 ">
             <Button
               type="button"
               variant="secondary"

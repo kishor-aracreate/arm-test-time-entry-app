@@ -1,71 +1,57 @@
-/**
- * Global Styles
- * ---------------------------------------------------------------------------
- * Base styles and CSS reset for the Timer App.
- * UnoCSS utilities are imported via 'virtual:uno.css' in main.tsx.
- */
+@import "react-toastify/dist/ReactToastify.css";
 
-/* Base reset and typography */
-* {
-    box-sizing: border-box;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --line-color: rgba(0, 0, 0, 0.08); /* light mode grid lines */
+  --text: #333333; /* dark text color */
+  --text-secondary: #666666; /* secondary text color */
+  --bg: #ffffff; /* light background color */
+  --button-bg: #F9BF3B; /* light button background */
+  --button-hover-bg: #F9BF3B; /* light button hover background */
+  --text-link: #F9BF3B; /* link color */
+  --glass-bg: rgba(255, 255, 255, 0.3); /* glass effect (light) */
+  --primary: #F9BF3B; /* primary color */
+  --shadow-color: rgba(0, 0, 0, 0.25); /* default */
+  --bg-auth-colour: #f7f7f7; /* auth background color */
+  --auth-button-bg: #000;
+  --bg-input:#000;
+  --text-input:#000;
 }
 
-html {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+.dark {
+  --line-color: rgba(255, 255, 255, 0.08); /* dark mode grid lines */
+  --text: #f5f5f5; /* light text color */
+  --text-secondary: #aaaaaa; /* secondary text color */
+  --bg: #0f0f0fff; /* dark background color */
+  --button-bg: #F9BF3B; /* dark button background */
+  --button-hover-bg: #F9BF3B; /* dark button hover background */
+  --text-link: #ffffff; /* link color */
+  --glass-bg: rgba(0, 0, 0, 0.4); /* glass effect (dark) */
+  --primary: #F9BF3B; /* primary color */
+  --shadow-color: rgb(187, 187, 187); /* white glow in dark mode */
+   --bg-auth-colour: #000000; /* auth background color */
+   --auth-button-bg: #ffffff;
+   --bg-input: #000000;
+   --text-input:#ffffff;
 }
 
-body {
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
+.light {
+  --line-color: rgba(0, 0, 0, 0.08); /* light mode grid lines */
+  --text: #333333; /* dark text color */
+  --text-secondary: #666666; /* secondary text color */
+  --bg: #ffffff; /* light background color */
+  --button-bg: #F9BF3B; /* light button background */
+  --button-hover-bg: #F9BF3B; /* light button hover background */
+  --text-link: #09080f; /* link color */
+  --glass-bg: rgba(255, 255, 255, 0.3); /* glass effect (light) */
+  --primary: #F9BF3B; /* primary color */
+  --shadow-color: rgba(0, 0, 0, 0.25); /* subtle black shadow */
+  --bg-auth-colour: #ffffff; /* auth background color */
+  --auth-button-bg: #000;
+  --bg-input:#ffffff;
+  --text-input:#000000;
 }
 
-/* Focus styles for accessibility */
-*:focus {
-    outline: 2px solid #3b82f6;
-    outline-offset: 2px;
-}
-
-/* Custom scrollbar styles */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-/* Utility classes for common patterns */
-.timer-display {
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-    font-variant-numeric: tabular-nums;
-}
-
-/* Animation classes */
-.fade-in {
-    animation: fadeIn 0.2s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
