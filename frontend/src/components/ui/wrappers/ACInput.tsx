@@ -40,6 +40,21 @@ const Input: React.FC<InputProps> = ({
         }
     };
 
+    // Wrap onChange to ensure name is passed
+    // AC UI library doesn't pass the name attribute, so we manually set it
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (props.onChange) {
+            // If the AC UI library doesn't set name, we'll set it manually
+            if (!e.target.name && props.name) {
+                Object.defineProperty(e.target, 'name', {
+                    value: props.name,
+                    writable: true
+                });
+            }
+            props.onChange(e);
+        }
+    };
+
     return (
         <div className="space-y-1">
             {label && (
@@ -48,11 +63,16 @@ const Input: React.FC<InputProps> = ({
                 </label>
             )}
             <ACInput
+                id={inputId}
                 type={mapType(type)}
+                name={props.name}
                 className={className}
                 value={props.value?.toString()}
-                onChange={props.onChange}
+                onChange={handleChange}
                 placeholder={props.placeholder}
+                disabled={props.disabled}
+                required={props.required}
+                autoFocus={props.autoFocus}
             />
             {error && (
                 <p className="text-sm text-red-600">{error}</p>
