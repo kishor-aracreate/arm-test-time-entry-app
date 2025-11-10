@@ -19,7 +19,7 @@ export class TimeEntryService {
     /**
      * Create a new time entry for a user
      */
-    async createTimeEntry(userId: number, timeEntryData: CreateTimeEntryData): Promise<TimeEntry> {
+    async createTimeEntry(userId: string, timeEntryData: CreateTimeEntryData): Promise<TimeEntry> {
         // Validate time entry data
         const validation = TimeEntryModel.validateCreateData(timeEntryData);
         if (!validation.isValid) {
@@ -42,7 +42,7 @@ export class TimeEntryService {
     /**
      * Get time entries for a user with optional date filtering
      */
-    async getUserTimeEntries(userId: number, date?: string, includeProjects: boolean = true): Promise<TimeEntry[]> {
+    async getUserTimeEntries(userId: string, date?: string, includeProjects: boolean = true): Promise<TimeEntry[]> {
         if (includeProjects) {
             return await this.timeEntryRepository.findByUserIdWithProjects(userId, date);
         } else {
@@ -53,7 +53,7 @@ export class TimeEntryService {
     /**
      * Get a specific time entry by ID (ensures user owns the entry)
      */
-    async getTimeEntryById(timeEntryId: number, userId: number): Promise<TimeEntry> {
+    async getTimeEntryById(timeEntryId: number, userId: string): Promise<TimeEntry> {
         const timeEntry = await this.timeEntryRepository.findByIdAndUserId(timeEntryId, userId);
         if (!timeEntry) {
             throw new Error('Time entry not found or access denied');
@@ -64,7 +64,7 @@ export class TimeEntryService {
     /**
      * Update a time entry (ensures user owns the entry)
      */
-    async updateTimeEntry(timeEntryId: number, userId: number, updates: UpdateTimeEntryData): Promise<TimeEntry> {
+    async updateTimeEntry(timeEntryId: number, userId: string, updates: UpdateTimeEntryData): Promise<TimeEntry> {
         // Validate update data
         const validation = TimeEntryModel.validateUpdateData(updates);
         if (!validation.isValid) {
@@ -113,7 +113,7 @@ export class TimeEntryService {
     /**
      * Delete a time entry (ensures user owns the entry)
      */
-    async deleteTimeEntry(timeEntryId: number, userId: number): Promise<void> {
+    async deleteTimeEntry(timeEntryId: number, userId: string): Promise<void> {
         const success = await this.timeEntryRepository.delete(timeEntryId, userId);
         if (!success) {
             throw new Error('Time entry not found or access denied');
@@ -123,14 +123,14 @@ export class TimeEntryService {
     /**
      * Get time entries for a date range
      */
-    async getTimeEntriesForDateRange(userId: number, startDate: string, endDate: string): Promise<TimeEntry[]> {
+    async getTimeEntriesForDateRange(userId: string, startDate: string, endDate: string): Promise<TimeEntry[]> {
         return await this.timeEntryRepository.findByDateRange(userId, startDate, endDate);
     }
 
     /**
      * Get daily summary for a user
      */
-    async getDailySummary(userId: number, date: string): Promise<{
+    async getDailySummary(userId: string, date: string): Promise<{
         date: string;
         totalDuration: number;
         entries: TimeEntry[];
@@ -150,7 +150,7 @@ export class TimeEntryService {
     /**
      * Get weekly summary for a user
      */
-    async getWeeklySummary(userId: number, startDate: string, endDate: string): Promise<{
+    async getWeeklySummary(userId: string, startDate: string, endDate: string): Promise<{
         startDate: string;
         endDate: string;
         totalDuration: number;

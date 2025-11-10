@@ -16,7 +16,7 @@ export class ActiveTimerService {
      * Start a new timer for a user
      * Enforces single active timer per user constraint
      */
-    async startTimer(userId: number, timerData: StartTimerData): Promise<ActiveTimer> {
+    async startTimer(userId: string, timerData: StartTimerData): Promise<ActiveTimer> {
         // Validate timer data
         const validation = ActiveTimerModel.validateStartData(timerData);
         if (!validation.isValid) {
@@ -45,7 +45,7 @@ export class ActiveTimerService {
     /**
      * Stop the active timer for a user and create a time entry
      */
-    async stopTimer(userId: number): Promise<{ timeEntry: TimeEntry; stoppedTimer: ActiveTimer }> {
+    async stopTimer(userId: string): Promise<{ timeEntry: TimeEntry; stoppedTimer: ActiveTimer }> {
         const result = await this.activeTimerRepository.stopTimer(userId);
 
         if (!result) {
@@ -58,7 +58,7 @@ export class ActiveTimerService {
     /**
      * Get the current active timer for a user
      */
-    async getActiveTimer(userId: number, includeProject: boolean = true): Promise<ActiveTimer | null> {
+    async getActiveTimer(userId: string, includeProject: boolean = true): Promise<ActiveTimer | null> {
         if (includeProject) {
             return await this.activeTimerRepository.findByUserIdWithProject(userId);
         } else {
@@ -69,14 +69,14 @@ export class ActiveTimerService {
     /**
      * Check if user has an active timer
      */
-    async hasActiveTimer(userId: number): Promise<boolean> {
+    async hasActiveTimer(userId: string): Promise<boolean> {
         return await this.activeTimerRepository.hasActiveTimer(userId);
     }
 
     /**
      * Get elapsed time for the active timer
      */
-    async getElapsedTime(userId: number): Promise<number | null> {
+    async getElapsedTime(userId: string): Promise<number | null> {
         const activeTimer = await this.activeTimerRepository.findByUserId(userId);
 
         if (!activeTimer) {

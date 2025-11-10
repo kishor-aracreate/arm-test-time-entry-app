@@ -13,12 +13,19 @@ export class ActiveTimerRepository {
     /**
      * Start a new active timer for a user
      * Ensures only one active timer per user by replacing any existing timer
+     * Auto-creates user if they don't exist
      */
-    async startTimer(userId: number, timerData: StartTimerData): Promise<ActiveTimer> {
+    async startTimer(userId: string, timerData: StartTimerData): Promise<ActiveTimer> {
         const client = await pool.connect();
 
         try {
             await client.query('BEGIN');
+
+            // Ensure user exists (auto-create if not)
+            await client.query(
+                'INSERT INTO users (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING',
+                [userId]
+            );
 
             // First, stop any existing active timer for this user
             await this.stopExistingTimer(userId, client);
@@ -58,7 +65,7 @@ export class ActiveTimerRepository {
     /**
      * Stop the active timer for a user and create a time entry
      */
-    async stopTimer(userId: number): Promise<{ timeEntry: any; stoppedTimer: ActiveTimer } | null> {
+    async stopTimer(userId: string): Promise<{ timeEntry: any; stoppedTimer: ActiveTimer } | null> {
         const client = await pool.connect();
 
         try {
@@ -101,7 +108,7 @@ export class ActiveTimerRepository {
     /**
      * Get the active timer for a user
      */
-    async findByUserId(userId: number, client?: any): Promise<ActiveTimer | null> {
+    async findByUserId(userId: string, client?: any): Promise<ActiveTimer | null> {
         const queryClient = client || pool;
 
         const query = `
@@ -122,7 +129,7 @@ export class ActiveTimerRepository {
     /**
      * Get active timer with project information
      */
-    async findByUserIdWithProject(userId: number): Promise<ActiveTimer | null> {
+    async findByUserIdWithProject(userId: string): Promise<ActiveTimer | null> {
         const query = `
             SELECT 
                 at.id, at.user_id, at.project_id, at.task_name, at.start_time,
@@ -164,7 +171,7 @@ export class ActiveTimerRepository {
     /**
      * Check if user has an active timer
      */
-    async hasActiveTimer(userId: number): Promise<boolean> {
+    async hasActiveTimer(userId: string): Promise<boolean> {
         const query = `
             SELECT 1 FROM active_timers WHERE user_id = $1 LIMIT 1
         `;
@@ -176,7 +183,7 @@ export class ActiveTimerRepository {
     /**
      * Delete active timer by user ID (used internally)
      */
-    private async deleteByUserId(userId: number, client?: any): Promise<boolean> {
+    private async deleteByUserId(userId: string, client?: any): Promise<boolean> {
         const queryClient = client || pool;
 
         const query = `
@@ -190,7 +197,7 @@ export class ActiveTimerRepository {
     /**
      * Stop existing timer without creating time entry (used internally)
      */
-    private async stopExistingTimer(userId: number, client: any): Promise<void> {
+    private async stopExistingTimer(userId: string, client: any): Promise<void> {
         // Just delete any existing active timer - this is used when starting a new timer
         // to ensure single-timer-per-user constraint
         await this.deleteByUserId(userId, client);

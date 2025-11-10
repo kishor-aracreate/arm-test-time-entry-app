@@ -6,7 +6,7 @@ export class ProjectRepository {
     /**
      * Create a new project for a user
      */
-    async create(userId: number, projectData: CreateProjectData): Promise<Project> {
+    async create(userId: string, projectData: CreateProjectData): Promise<Project> {
         const query = `
             INSERT INTO projects (user_id, name, color)
             VALUES ($1, $2, $3)
@@ -29,7 +29,7 @@ export class ProjectRepository {
     /**
      * Find all projects for a user
      */
-    async findByUserId(userId: number): Promise<Project[]> {
+    async findByUserId(userId: string): Promise<Project[]> {
         const query = `
             SELECT id, user_id, name, color, created_at
             FROM projects
@@ -44,7 +44,7 @@ export class ProjectRepository {
     /**
      * Find project by ID and user ID (ensures user owns the project)
      */
-    async findByIdAndUserId(id: number, userId: number): Promise<Project | null> {
+    async findByIdAndUserId(id: number, userId: string): Promise<Project | null> {
         const query = `
             SELECT id, user_id, name, color, created_at
             FROM projects
@@ -63,7 +63,7 @@ export class ProjectRepository {
     /**
      * Update project information
      */
-    async update(id: number, userId: number, updates: UpdateProjectData): Promise<Project | null> {
+    async update(id: number, userId: string, updates: UpdateProjectData): Promise<Project | null> {
         const fields: string[] = [];
         const values: any[] = [];
         let paramCount = 1;
@@ -109,7 +109,7 @@ export class ProjectRepository {
     /**
      * Delete project by ID and user ID (ensures user owns the project)
      */
-    async delete(id: number, userId: number): Promise<boolean> {
+    async delete(id: number, userId: string): Promise<boolean> {
         const query = `
             DELETE FROM projects
             WHERE id = $1 AND user_id = $2
@@ -122,7 +122,7 @@ export class ProjectRepository {
     /**
      * Check if project exists and belongs to user
      */
-    async exists(id: number, userId: number): Promise<boolean> {
+    async exists(id: number, userId: string): Promise<boolean> {
         const query = `
             SELECT 1
             FROM projects
@@ -136,7 +136,7 @@ export class ProjectRepository {
     /**
      * Get project count for a user
      */
-    async getCountByUserId(userId: number): Promise<number> {
+    async getCountByUserId(userId: string): Promise<number> {
         const query = `
             SELECT COUNT(*) as count
             FROM projects

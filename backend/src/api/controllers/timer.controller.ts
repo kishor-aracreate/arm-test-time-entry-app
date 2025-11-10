@@ -15,7 +15,7 @@ export class TimerController {
      */
     startTimer = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user.id;
+            const userId = req.user.id; // UUID string
 
             const timerData: StartTimerData = {
                 taskName: req.body.taskName,
@@ -81,7 +81,7 @@ export class TimerController {
      */
     stopTimer = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user.id;
+            const userId = req.user.id; // UUID string
 
             const result = await this.activeTimerService.stopTimer(userId);
 
@@ -122,7 +122,7 @@ export class TimerController {
      */
     getActiveTimer = async (req: Request, res: Response): Promise<void> => {
         try {
-            const userId = req.user.id;
+            const userId = req.user.id; // UUID string
 
             const activeTimer = await this.activeTimerService.getActiveTimer(userId, true);
 

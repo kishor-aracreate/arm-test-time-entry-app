@@ -16,7 +16,7 @@ export class ProjectService {
     /**
      * Create a new project for a user
      */
-    async createProject(userId: number, projectData: CreateProjectData): Promise<Project> {
+    async createProject(userId: string, projectData: CreateProjectData): Promise<Project> {
         // Validate project data
         const validation = ProjectModel.validateCreateData(projectData);
         if (!validation.isValid) {
@@ -31,14 +31,14 @@ export class ProjectService {
     /**
      * Get all projects for a user
      */
-    async getUserProjects(userId: number): Promise<Project[]> {
+    async getUserProjects(userId: string): Promise<Project[]> {
         return await this.projectRepository.findByUserId(userId);
     }
 
     /**
      * Get a specific project by ID (ensures user owns the project)
      */
-    async getProjectById(projectId: number, userId: number): Promise<Project> {
+    async getProjectById(projectId: number, userId: string): Promise<Project> {
         const project = await this.projectRepository.findByIdAndUserId(projectId, userId);
         if (!project) {
             throw new Error('Project not found or access denied');
@@ -49,7 +49,7 @@ export class ProjectService {
     /**
      * Update a project (ensures user owns the project)
      */
-    async updateProject(projectId: number, userId: number, updates: UpdateProjectData): Promise<Project> {
+    async updateProject(projectId: number, userId: string, updates: UpdateProjectData): Promise<Project> {
         // Validate update data
         const validation = ProjectModel.validateUpdateData(updates);
         if (!validation.isValid) {
@@ -73,7 +73,7 @@ export class ProjectService {
     /**
      * Delete a project (ensures user owns the project)
      */
-    async deleteProject(projectId: number, userId: number): Promise<void> {
+    async deleteProject(projectId: number, userId: string): Promise<void> {
         const success = await this.projectRepository.delete(projectId, userId);
         if (!success) {
             throw new Error('Project not found or access denied');
@@ -83,14 +83,14 @@ export class ProjectService {
     /**
      * Check if a project exists and belongs to the user
      */
-    async validateProjectAccess(projectId: number, userId: number): Promise<boolean> {
+    async validateProjectAccess(projectId: number, userId: string): Promise<boolean> {
         return await this.projectRepository.exists(projectId, userId);
     }
 
     /**
      * Get project statistics for a user
      */
-    async getProjectStats(userId: number): Promise<{ totalProjects: number }> {
+    async getProjectStats(userId: string): Promise<{ totalProjects: number }> {
         const totalProjects = await this.projectRepository.getCountByUserId(userId);
         return { totalProjects };
     }

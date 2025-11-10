@@ -22,7 +22,6 @@ export default defineConfig({
         "./Projects": "./src/pages/Projects.tsx",
         "./TimeEntries": "./src/pages/TimeEntries.tsx",
         "./Debug": "./src/pages/Debug.tsx",
-        "./ToastProvider": "./src/components/providers/ToastProvider.tsx",
       },
       shared: {
         react: {

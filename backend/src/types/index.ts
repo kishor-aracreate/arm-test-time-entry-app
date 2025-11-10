@@ -1,25 +1,17 @@
 // User types
 export interface User {
-    id: number;
-    name: string;
-    email: string;
+    userId: string; // UUID
     createdAt: Date;
 }
 
 export interface CreateUserData {
-    name: string;
-    email: string;
-    password: string;
-}
-
-export interface UserWithPassword extends User {
-    passwordHash: string;
+    userId: string; // UUID
 }
 
 // Project types
 export interface Project {
     id: number;
-    userId: number;
+    userId: string; // UUID
     name: string;
     color: string;
     createdAt: Date;
@@ -38,7 +30,7 @@ export interface UpdateProjectData {
 // Time Entry types
 export interface TimeEntry {
     id: number;
-    userId: number;
+    userId: string; // UUID
     projectId?: number;
     taskName: string;
     startTime: Date;
@@ -65,7 +57,7 @@ export interface UpdateTimeEntryData {
 // Active Timer types
 export interface ActiveTimer {
     id: number;
-    userId: number;
+    userId: string; // UUID
     projectId?: number;
     taskName: string;
     startTime: Date;
@@ -77,20 +69,9 @@ export interface StartTimerData {
     taskName: string;
 }
 
-// Authentication types
-export interface LoginCredentials {
-    email: string;
-    password: string;
-}
-
-export interface AuthResponse {
-    user: User;
-    token: string;
-}
-
+// Authentication types (not used in current implementation)
 export interface JWTPayload {
-    userId: number;
-    email: string;
+    userId: string; // UUID
 }
 
 // API Response types
@@ -106,16 +87,13 @@ export interface ApiResponse<T = any> {
 
 // Database query result types
 export interface DatabaseUser {
-    id: number;
-    name: string;
-    email: string;
-    password_hash: string;
+    user_id: string; // UUID
     created_at: Date;
 }
 
 export interface DatabaseProject {
     id: number;
-    user_id: number;
+    user_id: string; // UUID
     name: string;
     color: string;
     created_at: Date;
@@ -123,7 +101,7 @@ export interface DatabaseProject {
 
 export interface DatabaseTimeEntry {
     id: number;
-    user_id: number;
+    user_id: string; // UUID
     project_id?: number;
     task_name: string;
     start_time: Date;
@@ -134,7 +112,7 @@ export interface DatabaseTimeEntry {
 
 export interface DatabaseActiveTimer {
     id: number;
-    user_id: number;
+    user_id: string; // UUID
     project_id?: number;
     task_name: string;
     start_time: Date;

@@ -5,28 +5,40 @@ declare global {
     namespace Express {
         interface Request {
             user: {
-                id: number;
+                id: string; // UUID
             };
         }
     }
 }
 
 /**
- * Middleware to extract user ID from request headers
- * Uses X-User-ID header or defaults to static user ID 1
+ * Middleware to extract user ID (UUID) from request headers
+ * Uses X-User-ID header
  */
 export const userIdMiddleware = (req: Request, res: Response, next: NextFunction): void => {
     try {
-        // Extract user ID from X-User-ID header, default to '1'
-        const userIdHeader = req.headers['x-user-id'] || '1';
-        const userId = parseInt(userIdHeader as string, 10);
+        // Extract user ID from X-User-ID header
+        const userId = req.headers['x-user-id'] as string;
 
-        // Validate that userId is a valid number
-        if (isNaN(userId) || userId <= 0) {
+        // Validate that userId exists and is a valid UUID format
+        if (!userId) {
             res.status(400).json({
                 success: false,
                 error: {
-                    message: 'Invalid user ID format',
+                    message: 'User ID is required',
+                    code: 'MISSING_USER_ID'
+                }
+            });
+            return;
+        }
+
+        // Basic UUID format validation (8-4-4-4-12 hex characters)
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(userId)) {
+            res.status(400).json({
+                success: false,
+                error: {
+                    message: 'Invalid user ID format (expected UUID)',
                     code: 'INVALID_USER_ID'
                 }
             });

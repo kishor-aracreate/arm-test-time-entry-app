@@ -47,17 +47,17 @@ const Navbar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const handleEntriesFilter = (filter: string) => {
-    navigate(`/time-entries?filter=${filter}`);
+    navigate(`/clock/time-entries?filter=${filter}`);
     setEntriesDropdownOpen(false);
   };
 
   const handleProjectFilter = (projectId: string) => {
-    navigate(`/time-entries?project=${projectId}`);
+    navigate(`/clock/time-entries?project=${projectId}`);
     setProjectsDropdownOpen(false);
   };
 
   const handleCreateProject = () => {
-    navigate("/projects?action=create");
+    navigate("/clock/projects?action=create");
     setProjectsDropdownOpen(false);
   };
 
@@ -148,7 +148,7 @@ const Navbar: React.FC = () => {
                   <div className="border-t border-gray-200 my-1"></div>
                   <button
                     onClick={() => {
-                      navigate("/time-entries?action=add");
+                      navigate("/clock/time-entries?action=add");
                       setEntriesDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 font-medium"

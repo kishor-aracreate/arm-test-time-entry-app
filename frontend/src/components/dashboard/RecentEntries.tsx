@@ -54,17 +54,19 @@ const RecentEntries: React.FC = () => {
 
   if (recentEntries.length === 0) {
     return (
-      <Card>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Recent Entries
-        </h3>
-        <div className="text-center py-8">
-          <div className="text-gray-500 mb-4">
-            No time entries yet. Start your first timer!
+      <Card padding="none">
+        <div className="bg-bg text-text p-6">
+          <h3 className="text-lg font-semibold text-text mb-4">
+            Recent Entries
+          </h3>
+          <div className="text-center py-8">
+            <div className="text-gray-500 mb-4">
+              No time entries yet. Start your first timer!
+            </div>
+            <Button variant="primary" type="submit">
+              Start Timer
+            </Button>
           </div>
-          <Button variant="primary" type="submit">
-            Start Timer
-          </Button>
         </div>
       </Card>
     );

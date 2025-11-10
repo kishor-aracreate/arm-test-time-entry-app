@@ -1,6 +1,6 @@
-import Router from '@/routes';
-import { ErrorBoundary } from '@/components/ui';
-import { ToastProvider } from '@/components/providers/ToastProvider';
+import Router from "@/routes";
+import { ErrorBoundary } from "@/components/ui";
+import { ToastContainer } from "react-toastify";
 
 /**
  * App Component
@@ -40,10 +40,8 @@ import { ToastProvider } from '@/components/providers/ToastProvider';
 function App() {
   return (
     <ErrorBoundary>
-      <ToastProvider>
-        {/* Application Router handles all page navigation */}
-        <Router />
-      </ToastProvider>
+      <Router />
+      <ToastContainer position="bottom-right" autoClose={2000} />
     </ErrorBoundary>
   );
 }

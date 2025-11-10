@@ -6,7 +6,7 @@ export class TimeEntryRepository {
     /**
      * Create a new time entry
      */
-    async create(userId: number, timeEntryData: CreateTimeEntryData): Promise<TimeEntry> {
+    async create(userId: string, timeEntryData: CreateTimeEntryData): Promise<TimeEntry> {
         const duration = TimeEntryModel.calculateDuration(timeEntryData.startTime, timeEntryData.endTime);
 
         const query = `
@@ -44,7 +44,7 @@ export class TimeEntryRepository {
     /**
      * Find time entries by user ID with optional date filtering
      */
-    async findByUserId(userId: number, date?: string): Promise<TimeEntry[]> {
+    async findByUserId(userId: string, date?: string): Promise<TimeEntry[]> {
         let query = `
             SELECT te.id, te.user_id, te.project_id, te.task_name, te.start_time, te.end_time, te.duration, te.created_at
             FROM time_entries te
@@ -67,7 +67,7 @@ export class TimeEntryRepository {
     /**
      * Find time entries with project information
      */
-    async findByUserIdWithProjects(userId: number, date?: string): Promise<TimeEntry[]> {
+    async findByUserIdWithProjects(userId: string, date?: string): Promise<TimeEntry[]> {
         let query = `
             SELECT 
                 te.id, te.user_id, te.project_id, te.task_name, te.start_time, te.end_time, te.duration, te.created_at,
@@ -118,7 +118,7 @@ export class TimeEntryRepository {
     /**
      * Find time entry by ID and user ID
      */
-    async findByIdAndUserId(id: number, userId: number): Promise<TimeEntry | null> {
+    async findByIdAndUserId(id: number, userId: string): Promise<TimeEntry | null> {
         const query = `
             SELECT id, user_id, project_id, task_name, start_time, end_time, duration, created_at
             FROM time_entries
@@ -137,7 +137,7 @@ export class TimeEntryRepository {
     /**
      * Update time entry
      */
-    async update(id: number, userId: number, updates: UpdateTimeEntryData): Promise<TimeEntry | null> {
+    async update(id: number, userId: string, updates: UpdateTimeEntryData): Promise<TimeEntry | null> {
         const fields: string[] = [];
         const values: any[] = [];
         let paramCount = 1;
@@ -218,7 +218,7 @@ export class TimeEntryRepository {
     /**
      * Delete time entry by ID and user ID
      */
-    async delete(id: number, userId: number): Promise<boolean> {
+    async delete(id: number, userId: string): Promise<boolean> {
         const query = `
             DELETE FROM time_entries
             WHERE id = $1 AND user_id = $2
@@ -231,7 +231,7 @@ export class TimeEntryRepository {
     /**
      * Get time entries for a date range
      */
-    async findByDateRange(userId: number, startDate: string, endDate: string): Promise<TimeEntry[]> {
+    async findByDateRange(userId: string, startDate: string, endDate: string): Promise<TimeEntry[]> {
         const query = `
             SELECT id, user_id, project_id, task_name, start_time, end_time, duration, created_at
             FROM time_entries
@@ -246,7 +246,7 @@ export class TimeEntryRepository {
     /**
      * Get total duration for a user on a specific date
      */
-    async getTotalDurationByDate(userId: number, date: string): Promise<number> {
+    async getTotalDurationByDate(userId: string, date: string): Promise<number> {
         const query = `
             SELECT COALESCE(SUM(duration), 0) as total_duration
             FROM time_entries
@@ -260,7 +260,7 @@ export class TimeEntryRepository {
     /**
      * Get total duration grouped by project for a date range
      */
-    async getTotalDurationByProject(userId: number, startDate: string, endDate: string): Promise<Array<{ projectId: number | null; projectName: string | null; totalDuration: number }>> {
+    async getTotalDurationByProject(userId: string, startDate: string, endDate: string): Promise<Array<{ projectId: number | null; projectName: string | null; totalDuration: number }>> {
         const query = `
             SELECT 
                 te.project_id,

@@ -2,7 +2,7 @@
  * API Service
  * ---------------------------------------------------------------------------
  * HTTP client for communicating with the backend API.
- * Handles error handling, request/response formatting, and static user ID headers.
+ * Handles error handling, request/response formatting, and user ID headers.
  */
 
 import type {
@@ -14,6 +14,7 @@ import type {
     CreateTimeEntryData,
     UpdateTimeEntryData
 } from '@/store/types';
+import { getUserId } from '@/utils/user';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -47,7 +48,7 @@ class ApiService {
     private getHeaders(): HeadersInit {
         return {
             'Content-Type': 'application/json',
-            'X-User-ID': '1', // Static user ID
+            'X-User-ID': getUserId(),
         };
     }
 
