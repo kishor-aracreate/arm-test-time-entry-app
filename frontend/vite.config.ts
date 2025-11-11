@@ -23,6 +23,15 @@ export default defineConfig({
         "./TimeEntries": "./src/pages/TimeEntries.tsx",
         "./Debug": "./src/pages/Debug.tsx",
       },
+      remotes: {
+        core: {
+          type: "esm",
+          name: "core",
+          entry: "http://localhost:3000/remoteEntry.js",
+          entryGlobalName: "core",
+          shareScope: "default",
+        },
+      },
       shared: {
         react: {
           singleton: true,

@@ -9,28 +9,41 @@ export class TimeEntryRepository {
     async create(userId: string, timeEntryData: CreateTimeEntryData): Promise<TimeEntry> {
         const duration = TimeEntryModel.calculateDuration(timeEntryData.startTime, timeEntryData.endTime);
 
-        const query = `
-            INSERT INTO time_entries (user_id, project_id, task_name, start_time, end_time, duration)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            RETURNING id, user_id, project_id, task_name, start_time, end_time, duration, created_at
-        `;
-
-        const values = [
-            userId,
-            timeEntryData.projectId || null,
-            timeEntryData.taskName,
-            timeEntryData.startTime,
-            timeEntryData.endTime,
-            duration
-        ];
+        const client = await pool.connect();
 
         try {
-            const result = await pool.query<DatabaseTimeEntry>(query, values);
+            await client.query('BEGIN');
+
+            // Ensure user exists (auto-create if not)
+            await client.query(
+                'INSERT INTO users (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING',
+                [userId]
+            );
+
+            const query = `
+                INSERT INTO time_entries (user_id, project_id, task_name, start_time, end_time, duration)
+                VALUES ($1, $2, $3, $4, $5, $6)
+                RETURNING id, user_id, project_id, task_name, start_time, end_time, duration, created_at
+            `;
+
+            const values = [
+                userId,
+                timeEntryData.projectId || null,
+                timeEntryData.taskName,
+                timeEntryData.startTime,
+                timeEntryData.endTime,
+                duration
+            ];
+
+            const result = await client.query<DatabaseTimeEntry>(query, values);
             if (result.rows.length === 0) {
                 throw new Error('Failed to create time entry');
             }
+
+            await client.query('COMMIT');
             return TimeEntryModel.fromDatabase(result.rows[0]!);
         } catch (error: any) {
+            await client.query('ROLLBACK');
             if (error.code === '23503') { // Foreign key constraint violation
                 throw new Error('Invalid project ID or user ID');
             }
@@ -38,6 +51,8 @@ export class TimeEntryRepository {
                 throw new Error('End time must be after start time');
             }
             throw error;
+        } finally {
+            client.release();
         }
     }
 

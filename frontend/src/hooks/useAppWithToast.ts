@@ -7,7 +7,7 @@
 
 import { useCallback } from "react";
 import { useAppStore } from "@/store";
-import { toast } from "react-toastify";
+import toast from "@/components/ui/Toast";
 import type {
   StartTimerData,
   CreateProjectData,
@@ -19,6 +19,7 @@ export const useAppWithToast = () => {
   const store = useAppStore();
 
   // Timer actions
+  // Updated error handling for all methods
   const startTimer = useCallback(
     async (timerData: StartTimerData) => {
       try {
@@ -27,13 +28,29 @@ export const useAppWithToast = () => {
           autoClose: 3000,
         });
       } catch (error: any) {
-        toast.error(
-          error.message || "Failed to start timer. Please try again."
-        );
+        // Handle specific error cases
+        if (error && error.code === 'TIMER_ALREADY_ACTIVE') {
+          // Sync state with backend when there's an active timer conflict
+          await store.fetchActiveTimer();
+          toast.error("You already have an active timer running. Please stop it first.");
+        } else {
+          // Safe error message extraction
+          let errorMessage = "Failed to start timer. Please try again.";
+          if (error) {
+            if (error.message) {
+              errorMessage = error.message;
+            } else if (typeof error === 'string') {
+              errorMessage = error;
+            } else if (typeof error.toString === 'function') {
+              errorMessage = error.toString();
+            }
+          }
+          toast.error(errorMessage);
+        }
         throw error;
       }
     },
-    [store.startTimer]
+    [store]
   );
 
   const stopTimer = useCallback(async () => {
@@ -57,11 +74,21 @@ export const useAppWithToast = () => {
         );
       }
     } catch (error: any) {
-      toast.error(error.message || "Failed to stop timer. Please try again.");
+      // Safe error message extraction
+      let errorMessage = "Failed to stop timer. Please try again.";
+      if (error) {
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        } else if (typeof error.toString === 'function') {
+          errorMessage = error.toString();
+        }
+      }
+      toast.error(errorMessage);
       throw error;
     }
-  }, [store.stopTimer, store.activeTimer]);
-
+  }, [store]);
   // Project actions
   const createProject = useCallback(
     async (project: CreateProjectData) => {
@@ -72,12 +99,12 @@ export const useAppWithToast = () => {
         });
       } catch (error: any) {
         toast.error(
-          error.message || "Failed to create project. Please try again."
+          (error && error.message) || "Failed to create project. Please try again."
         );
         throw error;
       }
     },
-    [store.createProject]
+    [store] // Include store as dependency
   );
 
   const updateProject = useCallback(
@@ -92,12 +119,12 @@ export const useAppWithToast = () => {
         );
       } catch (error: any) {
         toast.error(
-          error.message || "Failed to update project. Please try again."
+          (error && error.message) || "Failed to update project. Please try again."
         );
         throw error;
       }
     },
-    [store.updateProject]
+    [store] // Include store as dependency
   );
 
   const deleteProject = useCallback(
@@ -113,12 +140,12 @@ export const useAppWithToast = () => {
         );
       } catch (error: any) {
         toast.error(
-          error.message || "Failed to delete project. Please try again."
+          (error && error.message) || "Failed to delete project. Please try again."
         );
         throw error;
       }
     },
-    [store.deleteProject, store.projects]
+    [store] // Include store as dependency
   );
 
   // Time entry actions
@@ -134,12 +161,12 @@ export const useAppWithToast = () => {
         );
       } catch (error: any) {
         toast.error(
-          error.message || "Failed to create time entry. Please try again."
+          (error && error.message) || "Failed to create time entry. Please try again."
         );
         throw error;
       }
     },
-    [store.createTimeEntry]
+    [store] // Include store as dependency
   );
 
   const updateTimeEntry = useCallback(
@@ -149,12 +176,12 @@ export const useAppWithToast = () => {
         toast.success("Time entry updated successfully.", { autoClose: 3000 });
       } catch (error: any) {
         toast.error(
-          error.message || "Failed to update time entry. Please try again."
+          (error && error.message) || "Failed to update time entry. Please try again."
         );
         throw error;
       }
     },
-    [store.updateTimeEntry]
+    [store] // Include store as dependency
   );
 
   const deleteTimeEntry = useCallback(
@@ -164,12 +191,12 @@ export const useAppWithToast = () => {
         toast.success("Time entry deleted successfully.", { autoClose: 3000 });
       } catch (error: any) {
         toast.error(
-          error.message || "Failed to delete time entry. Please try again."
+          (error && error.message) || "Failed to delete time entry. Please try again."
         );
         throw error;
       }
     },
-    [store.deleteTimeEntry]
+    [store] // Include store as dependency
   );
 
   // Return enhanced store with toast-integrated actions

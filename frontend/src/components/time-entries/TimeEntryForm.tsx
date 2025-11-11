@@ -29,7 +29,9 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
   const [formData, setFormData] = useState({
     taskName: "",
     projectId: "",
+    startDate: "",
     startTime: "",
+    endDate: "",
     endTime: "",
   });
   const [formErrors, setFormErrors] = useState<{
@@ -42,14 +44,16 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
   // Initialize form data when editing
   useEffect(() => {
     if (timeEntry) {
-      const startTime = new Date(timeEntry.startTime);
-      const endTime = new Date(timeEntry.endTime);
+      const startDateTime = new Date(timeEntry.startTime);
+      const endDateTime = new Date(timeEntry.endTime);
 
       setFormData({
         taskName: timeEntry.taskName,
         projectId: timeEntry.projectId?.toString() || "",
-        startTime: formatDateTimeLocal(startTime),
-        endTime: formatDateTimeLocal(endTime),
+        startDate: formatDate(startDateTime),
+        startTime: formatTime(startDateTime),
+        endDate: formatDate(endDateTime),
+        endTime: formatTime(endDateTime),
       });
     } else {
       // Default to current time for new entries
@@ -59,27 +63,39 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
       setFormData({
         taskName: "",
         projectId: "",
-        startTime: formatDateTimeLocal(oneHourAgo),
-        endTime: formatDateTimeLocal(now),
+        startDate: formatDate(oneHourAgo),
+        startTime: formatTime(oneHourAgo),
+        endDate: formatDate(now),
+        endTime: formatTime(now),
       });
     }
     setFormErrors({});
   }, [timeEntry]);
 
-  const formatDateTimeLocal = (date: Date): string => {
+  const formatDate = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    return `${year}-${month}-${day}`;
   };
 
-  const calculateDuration = (start: string, end: string): number => {
+  const formatTime = (date: Date): string => {
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  const combineDateTime = (date: string, time: string): Date | null => {
+    if (!date || !time) return null;
+    return new Date(`${date}T${time}`);
+  };
+
+  const calculateDuration = (): number => {
+    const start = combineDateTime(formData.startDate, formData.startTime);
+    const end = combineDateTime(formData.endDate, formData.endTime);
+
     if (!start || !end) return 0;
-    const startTime = new Date(start).getTime();
-    const endTime = new Date(end).getTime();
-    return Math.max(0, Math.floor((endTime - startTime) / 1000));
+    return Math.max(0, Math.floor((end.getTime() - start.getTime()) / 1000));
   };
 
   const formatDuration = (seconds: number): string => {
@@ -108,26 +124,32 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
       errors.taskName = "Task name must be less than 255 characters";
     }
 
-    // Start time validation
+    // Start date/time validation
+    if (!formData.startDate) {
+      errors.startTime = "Start date is required";
+    }
     if (!formData.startTime) {
       errors.startTime = "Start time is required";
     }
 
-    // End time validation
+    // End date/time validation
+    if (!formData.endDate) {
+      errors.endTime = "End date is required";
+    }
     if (!formData.endTime) {
       errors.endTime = "End time is required";
     }
 
     // Duration validation
-    if (formData.startTime && formData.endTime) {
-      const startTime = new Date(formData.startTime).getTime();
-      const endTime = new Date(formData.endTime).getTime();
+    const start = combineDateTime(formData.startDate, formData.startTime);
+    const end = combineDateTime(formData.endDate, formData.endTime);
 
-      if (endTime <= startTime) {
+    if (start && end) {
+      if (end.getTime() <= start.getTime()) {
         errors.endTime = "End time must be after start time";
       }
 
-      const duration = calculateDuration(formData.startTime, formData.endTime);
+      const duration = calculateDuration();
       if (duration > 24 * 60 * 60) {
         // More than 24 hours
         errors.duration = "Duration cannot exceed 24 hours";
@@ -146,13 +168,20 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
     }
 
     try {
+      const startDateTime = combineDateTime(formData.startDate, formData.startTime);
+      const endDateTime = combineDateTime(formData.endDate, formData.endTime);
+
+      if (!startDateTime || !endDateTime) {
+        return;
+      }
+
       const entryData = {
         taskName: formData.taskName.trim(),
         projectId: formData.projectId
           ? parseInt(formData.projectId)
           : undefined,
-        startTime: new Date(formData.startTime),
-        endTime: new Date(formData.endTime),
+        startTime: startDateTime,
+        endTime: endDateTime,
       };
 
       if (timeEntry) {
@@ -180,10 +209,11 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
     }
   };
 
-  const duration = calculateDuration(formData.startTime, formData.endTime);
+  const duration = calculateDuration();
 
   return (
-    <div className="fixed inset-0 bg-bg bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-bg
+     bg-opacity-500 flex items-center justify-center p-4 z-50">
       <Card className="w-full max-w-md" padding="none">
         <form onSubmit={handleSubmit} className="space-y-6 p-6 bg-bg text-text">
           <div className="flex items-center justify-between">
@@ -195,6 +225,7 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
               variant="ghost"
               size="sm"
               onClick={onClose}
+              className="w-10"
               disabled={isLoading}
             >
               ×
@@ -227,7 +258,7 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
               value={formData.projectId}
               onChange={handleInputChange}
               disabled={isLoading}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="block w-full bg-bg text-text px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             >
               <option value="">No Project</option>
               {projects.map((project) => (
@@ -238,30 +269,55 @@ const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4">
             <div>
-              <Input
-                label="Start Time"
-                name="startTime"
-                type="datetime-local"
-                value={formData.startTime}
-                onChange={handleInputChange}
-                error={formErrors.startTime}
-                disabled={isLoading}
-                required
-              />
+              <label className="block text-sm font-medium mb-2">Start</label>
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  label="Date"
+                  name="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={handleInputChange}
+                  error={formErrors.startTime}
+                  disabled={isLoading}
+                  required
+                />
+                <Input
+                  label="Time"
+                  name="startTime"
+                  type="time"
+                  value={formData.startTime}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  required
+                />
+              </div>
             </div>
+
             <div>
-              <Input
-                label="End Time"
-                name="endTime"
-                type="datetime-local"
-                value={formData.endTime}
-                onChange={handleInputChange}
-                error={formErrors.endTime}
-                disabled={isLoading}
-                required
-              />
+              <label className="block text-sm font-medium mb-2">End</label>
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  label="Date"
+                  name="endDate"
+                  type="date"
+                  value={formData.endDate}
+                  onChange={handleInputChange}
+                  error={formErrors.endTime}
+                  disabled={isLoading}
+                  required
+                />
+                <Input
+                  label="Time"
+                  name="endTime"
+                  type="time"
+                  value={formData.endTime}
+                  onChange={handleInputChange}
+                  disabled={isLoading}
+                  required
+                />
+              </div>
             </div>
           </div>
 

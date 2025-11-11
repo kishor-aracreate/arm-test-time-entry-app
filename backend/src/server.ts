@@ -1,33 +1,22 @@
 import http from "http";
 import { app } from "./app";
-import { config, testConnection, closePool } from "./config";
-
+import { config, closePool } from "./config";
 
 const PORT = config.port;
 
 const server = http.createServer(app);
 
-
 // Initialize database connection and start server
 const startServer = async () => {
   try {
-    // Test database connection (skip in development if DB not available)
-    if (config.nodeEnv === 'production') {
-      await testConnection();
-    } else {
-      try {
-        await testConnection();
-      } catch (error: any) {
-        console.warn("⚠️  Database connection failed, running without database for development:", error.message);
-      }
-    }
-
     // Start listening
     server.listen(PORT, () => {
       console.log(`🚀 Server is running at http://localhost:${PORT}`);
       console.log(`📊 Environment: ${config.nodeEnv}`);
-      if (config.nodeEnv !== 'production') {
-        console.log(`⚠️  Note: Some features may not work without database connection`);
+      if (config.nodeEnv !== "production") {
+        console.log(
+          `⚠️  Note: Some features may not work without database connection`
+        );
       }
     });
   } catch (error) {

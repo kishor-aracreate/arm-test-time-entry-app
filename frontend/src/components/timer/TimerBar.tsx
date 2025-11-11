@@ -81,7 +81,6 @@ const TimerBar: React.FC = () => {
     try {
       clearError();
       await stopTimer();
-      // Reset form after stopping
       setTaskName("");
       setSelectedProjectId(undefined);
     } catch (error) {

@@ -7,22 +7,37 @@ export class ProjectRepository {
      * Create a new project for a user
      */
     async create(userId: string, projectData: CreateProjectData): Promise<Project> {
-        const query = `
-            INSERT INTO projects (user_id, name, color)
-            VALUES ($1, $2, $3)
-            RETURNING id, user_id, name, color, created_at
-        `;
-
-        const values = [userId, projectData.name.trim(), projectData.color];
+        const client = await pool.connect();
 
         try {
-            const result = await pool.query<DatabaseProject>(query, values);
+            await client.query('BEGIN');
+
+            // Ensure user exists (auto-create if not)
+            await client.query(
+                'INSERT INTO users (user_id) VALUES ($1) ON CONFLICT (user_id) DO NOTHING',
+                [userId]
+            );
+
+            const query = `
+                INSERT INTO projects (user_id, name, color)
+                VALUES ($1, $2, $3)
+                RETURNING id, user_id, name, color, created_at
+            `;
+
+            const values = [userId, projectData.name.trim(), projectData.color];
+
+            const result = await client.query<DatabaseProject>(query, values);
             if (result.rows.length === 0) {
                 throw new Error('Failed to create project');
             }
+
+            await client.query('COMMIT');
             return ProjectModel.fromDatabase(result.rows[0]!);
         } catch (error: any) {
+            await client.query('ROLLBACK');
             throw error;
+        } finally {
+            client.release();
         }
     }
 

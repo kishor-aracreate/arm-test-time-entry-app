@@ -1,19 +1,20 @@
+import { useEffect } from "react";
 import Router from "@/routes";
 import { ErrorBoundary } from "@/components/ui";
-import { ToastContainer } from "react-toastify";
+import { useAppStore } from "@/store";
+import { getAccessToken } from "@/utils/token";
 
 /**
  * App Component
  * ---------------------------------------------------------------------------
  * Root component of the application with comprehensive error handling and notifications.
- * Configured to work without authentication - direct access to all features.
  *
  * ✅ Responsibilities:
  * - Provide the application shell with error boundaries
  * - Provide global toast notification system
  * - Mount the routing system (`<Router />`) which defines all page-level routes
  * - Act as the single entry point rendered by `main.tsx`
- * - Ensure application works without authentication setup
+ * - Initialize app state (fetch active timer on mount if authenticated)
  *
  * @remarks
  * - Keep this component lightweight; it should only wrap high-level providers
@@ -21,7 +22,7 @@ import { ToastContainer } from "react-toastify";
  * - All actual page rendering is delegated to `Router`.
  * - Error boundaries catch JavaScript errors anywhere in the component tree
  * - Toast provider enables global notification system
- * - No authentication providers needed - app uses static user ID
+ * - Authentication is handled by protected routes
  *
  * @example
  * ```tsx
@@ -38,10 +39,20 @@ import { ToastContainer } from "react-toastify";
  * ```
  */
 function App() {
+  const fetchActiveTimer = useAppStore((state) => state.fetchActiveTimer);
+
+  // Fetch active timer on app mount to sync state with backend
+  // Only if user is authenticated (has token)
+  useEffect(() => {
+    const token = getAccessToken();
+    if (token) {
+      fetchActiveTimer();
+    }
+  }, [fetchActiveTimer]);
+
   return (
     <ErrorBoundary>
       <Router />
-      <ToastContainer position="bottom-right" autoClose={2000} />
     </ErrorBoundary>
   );
 }

@@ -1,3 +1,4 @@
+export * from './auth.routes';
 export * from './health.routes';
 export * from './hello.routes';
 export * from './project.routes';

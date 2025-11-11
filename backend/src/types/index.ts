@@ -69,9 +69,11 @@ export interface StartTimerData {
     taskName: string;
 }
 
-// Authentication types (not used in current implementation)
-export interface JWTPayload {
+// Authentication types
+export interface JwtPayload {
     userId: string; // UUID
+    iat?: number;   // Issued at (added by jsonwebtoken)
+    exp?: number;   // Expiration (added by jsonwebtoken)
 }
 
 // API Response types

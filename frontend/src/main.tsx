@@ -4,6 +4,7 @@ import '@/index.css';
 import App from '@/App.tsx';
 import 'virtual:uno.css';
 import '@kishor-aracreate/ac-ui-library-test/style.css';
+import '@/utils/setToken'; // Enable window.setToken() for manual token setting
 
 /**
  * Application Entry Point

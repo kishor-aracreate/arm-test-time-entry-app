@@ -77,7 +77,10 @@ const RecentEntries: React.FC = () => {
       <div className="bg-bg text-text p-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Recent Entries</h3>
-          <Button variant="primary" onClick={() => navigate("/time-entries")}>
+          <Button
+            variant="primary"
+            onClick={() => navigate("/clock/time-entries")}
+          >
             View All
           </Button>
         </div>

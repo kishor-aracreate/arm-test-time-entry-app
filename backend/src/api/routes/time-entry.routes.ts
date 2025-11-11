@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { TimeEntryController } from '../controllers/time-entry.controller';
-import { userIdMiddleware } from '../middlewares';
+import { authMiddleware } from '../middlewares';
 
 const router: Router = Router();
 const timeEntryController = new TimeEntryController();
 
-// All time entry routes require user ID
-router.use(userIdMiddleware);
+// All time entry routes require authentication
+router.use(authMiddleware);
 
 // Summary routes (must come before /:id routes to avoid conflicts)
 router.get('/summary/daily', timeEntryController.getDailySummary);

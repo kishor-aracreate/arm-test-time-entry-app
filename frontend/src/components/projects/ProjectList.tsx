@@ -36,8 +36,8 @@ const ProjectList: React.FC<ProjectListProps> = ({
 
   if (projects.length === 0) {
     return (
-      <Card className="col-span-full">
-        <div className="text-center py-12 bg-bg text-text">
+      <Card className="col-span-full" padding="none">
+        <div className="text-center py-12 bg-bg text-text p-6">
           <div className="text-gray-400 mb-4">
             <svg
               className="mx-auto h-12 w-12"

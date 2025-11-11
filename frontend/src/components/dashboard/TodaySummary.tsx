@@ -49,9 +49,7 @@ const TodaySummary: React.FC = () => {
 
           {summary.projectGroups.length > 0 && (
             <div className="pt-3 border-t border-gray-200">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">
-                By Project:
-              </h4>
+              <h4 className="text-sm font-medium mb-3 mt-4">By Project:</h4>
               <div className="space-y-2">
                 {summary.projectGroups.map((group) => (
                   <div
@@ -65,11 +63,11 @@ const TodaySummary: React.FC = () => {
                           backgroundColor: group.project?.color || "#6b7280",
                         }}
                       />
-                      <span className="text-sm text-gray-600 truncate">
+                      <span className="text-sm  truncate">
                         {group.project?.name || "No Project"}
                       </span>
                     </div>
-                    <span className="text-sm font-medium text-gray-900 ml-2">
+                    <span className="text-sm font-medium  ml-2">
                       {formatDuration(group.totalDuration)}
                     </span>
                   </div>

@@ -9,6 +9,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useAppStore } from "@/store";
 import {
+  IconChevronDown,
+  IconChevronUp,
   IconClockEdit,
   IconFolder,
   IconHomeFilled,
@@ -94,26 +96,18 @@ const Navbar: React.FC = () => {
                   setProjectsDropdownOpen(false);
                 }}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:cursor-pointer ${
-                  isActive("/time-entries")
+                  isActive("/clock/time-entries")
                     ? " text-primary shadow-md"
                     : "text-text hover:text-primary"
                 }`}
               >
                 <IconClockEdit className="w-5 h-5" />
                 <span>Time Entries</span>
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                {entriesDropdownOpen ? (
+                  <IconChevronUp className="w-5 h-5" />
+                ) : (
+                  <IconChevronDown className="w-5 h-5" />
+                )}
               </button>
 
               {entriesDropdownOpen && (
@@ -123,25 +117,25 @@ const Navbar: React.FC = () => {
                       navigate("/clock/time-entries");
                       setEntriesDropdownOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm  hover:bg-blue-50 hover:text-blue-600"
+                    className="w-full text-left px-4 py-2 text-sm   hover:text-primary hover:cursor-pointer"
                   >
                     All Entries
                   </button>
                   <button
                     onClick={() => handleEntriesFilter("today")}
-                    className="w-full text-left px-4 py-2 text-sm  hover:bg-blue-50 hover:text-blue-600"
+                    className="w-full text-left px-4 py-2 text-sm   hover:text-primary hover:cursor-pointer"
                   >
                     Today
                   </button>
                   <button
                     onClick={() => handleEntriesFilter("week")}
-                    className="w-full text-left px-4 py-2 text-sm  hover:bg-blue-50 hover:text-blue-600"
+                    className="w-full text-left px-4 py-2 text-sm   hover:text-primary hover:cursor-pointer"
                   >
                     This Week
                   </button>
                   <button
                     onClick={() => handleEntriesFilter("month")}
-                    className="w-full text-left px-4 py-2 text-sm  hover:bg-blue-50 hover:text-blue-600"
+                    className="w-full text-left px-4 py-2 text-sm   hover:text-primary hover:cursor-pointer"
                   >
                     This Month
                   </button>
@@ -151,7 +145,7 @@ const Navbar: React.FC = () => {
                       navigate("/clock/time-entries?action=add");
                       setEntriesDropdownOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 font-medium"
+                    className="w-full text-left px-4 py-2 text-sm text-blue-600 hover:text-primary hover:cursor-pointer font-medium"
                   >
                     + Add Entry
                   </button>
@@ -174,19 +168,11 @@ const Navbar: React.FC = () => {
               >
                 <IconFolder className="w-5 h-5" />
                 <span>Projects</span>
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                {projectsDropdownOpen ? (
+                  <IconChevronUp className="w-5 h-5" />
+                ) : (
+                  <IconChevronDown className="w-5 h-5" />
+                )}
               </button>
 
               {projectsDropdownOpen && (
@@ -196,13 +182,13 @@ const Navbar: React.FC = () => {
                       navigate("/clock/projects");
                       setProjectsDropdownOpen(false);
                     }}
-                    className="w-full text-left px-4 py-2 text-sm  hover:bg-blue-50 hover:text-blue-600"
+                    className="w-full text-left px-4 py-2 text-sm  hover:text-primary hover:cursor-pointer"
                   >
                     All Projects
                   </button>
                   <button
                     onClick={handleCreateProject}
-                    className="w-full text-left px-4 py-2 text-sm  hover:bg-blue-50 font-medium"
+                    className="w-full text-left px-4 py-2 text-sm  hover:text-primary hover:cursor-pointer font-medium"
                   >
                     + Create Project
                   </button>
