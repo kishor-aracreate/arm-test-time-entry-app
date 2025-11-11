@@ -15,7 +15,7 @@ import type {
     CreateProjectData,
     CreateTimeEntryData,
     UpdateTimeEntryData,
-} from './types';
+} from '@/types';
 
 interface AppState {
     // Timer state
@@ -58,6 +58,8 @@ interface AppState {
     setError: (error: string | null) => void;
     clearError: () => void;
 }
+
+export type { AppState };
 
 export const useAppStore = create<AppState>()(
     devtools(
@@ -362,6 +364,3 @@ export const useAppStore = create<AppState>()(
         }
     )
 );
-
-export type { AppState };
-export * from './types';

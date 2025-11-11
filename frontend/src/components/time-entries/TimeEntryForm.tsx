@@ -11,7 +11,7 @@ import type {
   TimeEntry,
   CreateTimeEntryData,
   UpdateTimeEntryData,
-} from "@/store/types";
+} from "@/types";
 
 interface TimeEntryFormProps {
   timeEntry?: TimeEntry | null;

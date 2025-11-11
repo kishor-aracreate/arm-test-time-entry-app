@@ -7,7 +7,7 @@
 import React from "react";
 import { Card, Button } from "@/components/ui";
 import { useAppWithToast } from "@/hooks/useAppWithToast";
-import type { Project } from "@/store/types";
+import type { Project } from "@/types";
 
 interface ProjectListProps {
   onEditProject: (project: Project) => void;

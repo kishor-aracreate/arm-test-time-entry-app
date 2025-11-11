@@ -6,7 +6,7 @@
 
 import React, { useState } from "react";
 import { Card, Button } from "@/components/ui";
-import type { TimeEntry } from "@/store/types";
+import type { TimeEntry } from "@/types";
 
 interface TimeEntryListProps {
   entries: TimeEntry[];

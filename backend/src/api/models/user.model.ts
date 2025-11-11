@@ -1,10 +1,10 @@
-import { User, UserWithPassword, DatabaseUser } from '../../types';
+import { LegacyUser, UserWithPassword, LegacyDatabaseUser } from '../../types';
 
 export class UserModel {
     /**
      * Convert database user record to User interface
      */
-    static fromDatabase(dbUser: DatabaseUser): UserWithPassword {
+    static fromDatabase(dbUser: LegacyDatabaseUser): UserWithPassword {
         return {
             id: dbUser.id,
             name: dbUser.name,
@@ -17,7 +17,7 @@ export class UserModel {
     /**
      * Convert User to public format (without password hash)
      */
-    static toPublic(user: UserWithPassword): User {
+    static toPublic(user: UserWithPassword): LegacyUser {
         const { passwordHash, ...publicUser } = user;
         return publicUser;
     }

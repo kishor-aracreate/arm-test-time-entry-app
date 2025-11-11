@@ -10,7 +10,7 @@ import Layout from "@/components/layout/Layout";
 import { Card, Button } from "@/components/ui";
 import { TimeEntryForm, TimeEntryList } from "@/components/time-entries";
 import { useAppStore } from "@/store";
-import type { TimeEntry } from "@/store/types";
+import type { TimeEntry } from "@/types";
 
 const TimeEntries: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -110,8 +110,8 @@ const TimeEntries: React.FC = () => {
   // Filter entries by project if a project filter is selected
   const filteredEntries = projectFilter
     ? timeEntries.filter(
-        (entry) => entry.projectId?.toString() === projectFilter
-      )
+      (entry) => entry.projectId?.toString() === projectFilter
+    )
     : timeEntries;
 
   return (

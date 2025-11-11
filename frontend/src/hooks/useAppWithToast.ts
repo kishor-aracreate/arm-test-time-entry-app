@@ -13,7 +13,7 @@ import type {
   CreateProjectData,
   CreateTimeEntryData,
   UpdateTimeEntryData,
-} from "@/store/types";
+} from "@/types";
 
 export const useAppWithToast = () => {
   const store = useAppStore();

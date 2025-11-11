@@ -1,12 +1,12 @@
 import { pool } from '../../config/database';
-import { User, UserWithPassword, CreateUserData, DatabaseUser } from '../../types';
+import { UserWithPassword, LegacyCreateUserData, LegacyDatabaseUser } from '../../types';
 import { UserModel } from '../models/user.model';
 
 export class UserRepository {
     /**
      * Create a new user
      */
-    async create(userData: CreateUserData, passwordHash: string): Promise<UserWithPassword> {
+    async create(userData: LegacyCreateUserData, passwordHash: string): Promise<UserWithPassword> {
         const query = `
       INSERT INTO users (name, email, password_hash)
       VALUES ($1, $2, $3)
@@ -16,7 +16,7 @@ export class UserRepository {
         const values = [userData.name, userData.email, passwordHash];
 
         try {
-            const result = await pool.query<DatabaseUser>(query, values);
+            const result = await pool.query<LegacyDatabaseUser>(query, values);
             if (result.rows.length === 0) {
                 throw new Error('Failed to create user');
             }
@@ -39,7 +39,7 @@ export class UserRepository {
       WHERE email = $1
     `;
 
-        const result = await pool.query<DatabaseUser>(query, [email]);
+        const result = await pool.query<LegacyDatabaseUser>(query, [email]);
 
         if (result.rows.length === 0) {
             return null;
@@ -58,7 +58,7 @@ export class UserRepository {
       WHERE id = $1
     `;
 
-        const result = await pool.query<DatabaseUser>(query, [id]);
+        const result = await pool.query<LegacyDatabaseUser>(query, [id]);
 
         if (result.rows.length === 0) {
             return null;
@@ -70,7 +70,7 @@ export class UserRepository {
     /**
      * Update user information
      */
-    async update(id: number, updates: Partial<CreateUserData>): Promise<UserWithPassword | null> {
+    async update(id: number, updates: Partial<LegacyCreateUserData>): Promise<UserWithPassword | null> {
         const fields: string[] = [];
         const values: any[] = [];
         let paramCount = 1;
@@ -101,7 +101,7 @@ export class UserRepository {
     `;
 
         try {
-            const result = await pool.query<DatabaseUser>(query, values);
+            const result = await pool.query<LegacyDatabaseUser>(query, values);
 
             if (result.rows.length === 0) {
                 return null;

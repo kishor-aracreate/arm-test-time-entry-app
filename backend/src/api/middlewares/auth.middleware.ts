@@ -15,14 +15,41 @@ declare global {
 }
 
 /**
+ * Helper function to refresh access token using external API
+ */
+const refreshAccessToken = async (refreshToken: string): Promise<string | null> => {
+  try {
+    const response = await fetch('https://dev.arametrics.app/api/auth/refresh', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refreshToken })
+    });
+
+    const data: any = await response.json();
+
+    if (!response.ok || !data.success || !data.data?.accessToken) {
+      return null;
+    }
+
+    return data.data.accessToken;
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    return null;
+  }
+};
+
+/**
  * Middleware to extract and validate JWT token from Authorization header
  * Decodes the token and attaches user information to the request
+ * Automatically refreshes expired tokens using refresh token from cookies
  */
-export const authMiddleware = (
+export const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): Promise<void> => {
   try {
     // Extract Authorization header
     const authHeader = req.headers["authorization"];
@@ -56,6 +83,7 @@ export const authMiddleware = (
 
     // Verify and decode JWT token
     let decoded: any;
+    let tokenExpired = false;
     try {
       decoded = jwt.verify(token, config.jwt.secret as string) as any;
     } catch (error: any) {
@@ -79,14 +107,7 @@ export const authMiddleware = (
 
           // Check if token is expired
           if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
-            res.status(401).json({
-              success: false,
-              error: {
-                message: "Token has expired",
-                code: "TOKEN_EXPIRED",
-              },
-            });
-            return;
+            tokenExpired = true;
           }
         } catch (decodeError) {
           res.status(401).json({
@@ -101,17 +122,9 @@ export const authMiddleware = (
       } else {
         // In production, enforce strict verification
         if (error.name === "TokenExpiredError") {
-          res.status(401).json({
-            success: false,
-            error: {
-              message: "Token has expired",
-              code: "TOKEN_EXPIRED",
-            },
-          });
-          return;
-        }
-
-        if (error.name === "JsonWebTokenError") {
+          tokenExpired = true;
+          decoded = jwt.decode(token) as any;
+        } else if (error.name === "JsonWebTokenError") {
           res.status(401).json({
             success: false,
             error: {
@@ -120,18 +133,61 @@ export const authMiddleware = (
             },
           });
           return;
+        } else {
+          // Generic token validation error
+          res.status(401).json({
+            success: false,
+            error: {
+              message: "Invalid token format",
+              code: "INVALID_TOKEN",
+            },
+          });
+          return;
         }
+      }
+    }
 
-        // Generic token validation error
+    // If token is expired, try to refresh it
+    if (tokenExpired) {
+      const refreshToken = req.cookies?.refresh_token;
+
+      if (!refreshToken) {
         res.status(401).json({
           success: false,
           error: {
-            message: "Invalid token format",
-            code: "INVALID_TOKEN",
+            message: "Token has expired",
+            code: "TOKEN_EXPIRED",
           },
         });
         return;
       }
+
+      // Try to refresh the access token
+      const newAccessToken = await refreshAccessToken(refreshToken);
+
+      if (!newAccessToken) {
+        res.status(401).json({
+          success: false,
+          error: {
+            message: "Token has expired and refresh failed",
+            code: "TOKEN_EXPIRED",
+          },
+        });
+        return;
+      }
+
+      // Return the new access token to the client
+      res.status(401).json({
+        success: false,
+        error: {
+          message: "Token has expired",
+          code: "TOKEN_EXPIRED",
+        },
+        data: {
+          accessToken: newAccessToken
+        }
+      });
+      return;
     }
 
     // Extract user ID from decoded payload (support both 'userId' and 'sub' fields)

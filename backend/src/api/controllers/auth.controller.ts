@@ -84,13 +84,13 @@ export class AuthController {
     }
 
     /**
-     * Refresh access token using refresh token
+     * Refresh access token using refresh token from cookies
      * POST /api/auth/refresh
      */
     async refreshToken(req: Request, res: Response): Promise<void> {
         try {
-            // Get refresh token from cookie or request body
-            const refreshToken = req.cookies?.refresh_token || req.body?.refreshToken;
+            // Get refresh token from cookies
+            const refreshToken = req.cookies?.refresh_token;
 
             if (!refreshToken) {
                 res.status(401).json({
@@ -103,57 +103,33 @@ export class AuthController {
                 return;
             }
 
-            // Verify refresh token
-            let decoded: any;
-            try {
-                decoded = jwt.verify(refreshToken, config.jwt.secret as string) as any;
-            } catch (error: any) {
-                res.status(401).json({
+            // Call external API to refresh token
+            const response = await fetch('https://dev.arametrics.app/api/auth/refresh', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ refreshToken })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                res.status(response.status).json({
                     success: false,
                     error: {
-                        message: 'Invalid or expired refresh token',
-                        code: 'INVALID_REFRESH_TOKEN'
+                        message: data.error?.message || 'Failed to refresh token',
+                        code: data.error?.code || 'INVALID_REFRESH_TOKEN'
                     }
                 });
                 return;
             }
 
-            // Validate it's a refresh token
-            if (decoded.type !== 'refresh') {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Invalid token type',
-                        code: 'INVALID_TOKEN_TYPE'
-                    }
-                });
-                return;
-            }
-
-            const userId = decoded.userId;
-
-            if (!userId) {
-                res.status(401).json({
-                    success: false,
-                    error: {
-                        message: 'Invalid refresh token payload',
-                        code: 'INVALID_REFRESH_TOKEN'
-                    }
-                });
-                return;
-            }
-
-            // Generate new access token
-            const accessToken = jwt.sign(
-                { userId },
-                config.jwt.secret as string,
-                { expiresIn: '24h' }
-            );
-
+            // Return the new access token from external API
             res.status(200).json({
                 success: true,
                 data: {
-                    accessToken
+                    accessToken: data.data.accessToken
                 }
             });
         } catch (error) {

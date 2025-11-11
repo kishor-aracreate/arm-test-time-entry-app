@@ -4,7 +4,7 @@
  * Utility functions for time calculations and formatting.
  */
 
-import type { TimeEntry, ActiveTimer, Project } from '@/store/types';
+import type { TimeEntry, ActiveTimer, Project } from '@/types';
 
 /**
  * Format duration in seconds to human readable format

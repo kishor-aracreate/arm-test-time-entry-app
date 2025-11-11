@@ -5,8 +5,6 @@
  * These types define the shape of data used throughout the app.
  */
 
-
-
 export interface Project {
     id: number;
     userId: number;
@@ -35,8 +33,6 @@ export interface ActiveTimer {
     startTime: Date;
     project?: Project;
 }
-
-// API request/response types
 
 export interface StartTimerData {
     taskName: string;

@@ -9,7 +9,7 @@ import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui';
 import { ProjectList, ProjectForm } from '@/components/projects';
 import { useAppStore } from '@/store';
-import type { Project } from '@/store/types';
+import type { Project } from '@/types';
 
 const Projects: React.FC = () => {
     const { fetchProjects, error, clearError } = useAppStore();

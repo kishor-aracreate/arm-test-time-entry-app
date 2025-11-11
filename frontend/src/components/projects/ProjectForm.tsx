@@ -7,7 +7,7 @@
 import React, { useState } from "react";
 import { Card, Button, Input } from "@/components/ui";
 import { useAppWithToast } from "@/hooks/useAppWithToast";
-import type { Project, CreateProjectData } from "@/store/types";
+import type { Project, CreateProjectData } from "@/types";
 
 interface ProjectFormProps {
   project?: Project | null;
@@ -155,11 +155,10 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                   type="button"
                   className={`
                                         w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all duration-200 shadow-sm
-                                        ${
-                                          formData.color === color
-                                            ? "border-gray-900 scale-110 shadow-md"
-                                            : "border-gray-300 hover:border-gray-400 hover:scale-105"
-                                        }
+                                        ${formData.color === color
+                      ? "border-gray-900 scale-110 shadow-md"
+                      : "border-gray-300 hover:border-gray-400 hover:scale-105"
+                    }
                                     `}
                   style={{ backgroundColor: color }}
                   onClick={() => handleColorSelect(color)}
