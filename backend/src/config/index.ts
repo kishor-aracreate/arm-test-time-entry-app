@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const config = {
+  coreBackend: process.env.CORE_BACKEND,
   port: process.env.PORT || 3000,
   database: {
     host: process.env.DB_HOST || "localhost",

@@ -14,7 +14,6 @@ import type {
   CreateTimeEntryData,
   UpdateTimeEntryData,
   ApiResponse,
-  RefreshTokenResponse,
   DailySummary,
   WeeklySummary,
 } from "@/types";
@@ -63,6 +62,14 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
+
+      // Check if backend refreshed the token
+      const newAccessToken = response.headers.get('X-New-Access-Token');
+      if (newAccessToken) {
+        console.log('✅ Token auto-refreshed by backend');
+        localStorage.setItem("accessToken", newAccessToken);
+      }
+
       const data: ApiResponse<T> = await response.json();
 
       if (!response.ok || !data.success) {
@@ -72,33 +79,7 @@ class ApiService {
           data.error?.details
         );
 
-        // Handle token expiration - backend already refreshed it
-        if (error.code === "TOKEN_EXPIRED" && data.data?.accessToken) {
-          // Update the access token from backend response
-          const newToken = (data.data as any).accessToken;
-          localStorage.setItem("accessToken", newToken);
-
-          // Retry the original request with new token
-          const retryConfig: RequestInit = {
-            ...config,
-            headers: this.getHeaders(), // Get updated headers with new token
-          };
-
-          const retryResponse = await fetch(url, retryConfig);
-          const retryData: ApiResponse<T> = await retryResponse.json();
-
-          if (!retryResponse.ok || !retryData.success) {
-            throw new ApiError(
-              retryData.error?.message || "Request failed",
-              retryData.error?.code || "UNKNOWN_ERROR",
-              retryData.error?.details
-            );
-          }
-
-          return retryData.data as T;
-        }
-
-        // Handle other authentication errors - redirect to login
+        // Handle authentication errors - redirect to login
         if (this.isAuthError(error.code)) {
           // Clear the invalid token
           localStorage.removeItem("accessToken");

@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { config } from "../../config";
-import { JwtPayload } from "../../types";
 
 // Extend Express Request interface to include user property
 declare global {
@@ -16,15 +15,19 @@ declare global {
 
 /**
  * Helper function to refresh access token using external API
+ * Forwards cookies from the original request
  */
-const refreshAccessToken = async (refreshToken: string): Promise<string | null> => {
+const refreshAccessToken = async (req: Request): Promise<string | null> => {
   try {
-    const response = await fetch('https://dev.arametrics.app/api/auth/refresh', {
+    // Forward all cookies from the original request
+    const cookieHeader = req.headers.cookie || '';
+
+    const response = await fetch(`${config.coreBackend}/auth/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Cookie': cookieHeader, // Forward cookies to external API
       },
-      body: JSON.stringify({ refreshToken })
     });
 
     const data: any = await response.json();
@@ -149,23 +152,13 @@ export const authMiddleware = async (
 
     // If token is expired, try to refresh it
     if (tokenExpired) {
-      const refreshToken = req.cookies?.refresh_token;
-
-      if (!refreshToken) {
-        res.status(401).json({
-          success: false,
-          error: {
-            message: "Token has expired",
-            code: "TOKEN_EXPIRED",
-          },
-        });
-        return;
-      }
+      console.log('🔄 Token expired, attempting refresh...');
 
       // Try to refresh the access token
-      const newAccessToken = await refreshAccessToken(refreshToken);
+      const newAccessToken = await refreshAccessToken(req);
 
       if (!newAccessToken) {
+        console.log('❌ Token refresh failed');
         res.status(401).json({
           success: false,
           error: {
@@ -176,18 +169,26 @@ export const authMiddleware = async (
         return;
       }
 
-      // Return the new access token to the client
-      res.status(401).json({
-        success: false,
-        error: {
-          message: "Token has expired",
-          code: "TOKEN_EXPIRED",
-        },
-        data: {
-          accessToken: newAccessToken
-        }
-      });
-      return;
+      console.log('✅ Token refreshed successfully');
+
+      // Decode the new token to get user info
+      decoded = jwt.decode(newAccessToken) as any;
+
+      if (!decoded) {
+        res.status(401).json({
+          success: false,
+          error: {
+            message: "Invalid refreshed token",
+            code: "INVALID_TOKEN",
+          },
+        });
+        return;
+      }
+
+      // Add the new token to response headers so frontend can update it
+      res.setHeader('X-New-Access-Token', newAccessToken);
+
+      // Continue processing with the refreshed token
     }
 
     // Extract user ID from decoded payload (support both 'userId' and 'sub' fields)
