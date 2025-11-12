@@ -97,7 +97,7 @@ export const ensureAuthenticated = (): boolean => {
 
     if (!token) {
         // No token exists - redirect to login page
-        window.location.hash = '#/login';
+        window.location.hash = '/auth';
         return false;
     }
 

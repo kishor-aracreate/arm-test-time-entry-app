@@ -83,7 +83,14 @@ class ApiService {
         if (this.isAuthError(error.code)) {
           // Clear the invalid token
           localStorage.removeItem("accessToken");
-          window.location.hash = "#/login";
+
+          // Save current location to redirect back after login
+          const currentPath = window.location.hash.replace('#', '');
+          if (currentPath && !currentPath.includes('/login')) {
+            localStorage.setItem('redirectAfterLogin', currentPath);
+          }
+
+          window.location.href = "/auth";
         }
 
         throw error;
